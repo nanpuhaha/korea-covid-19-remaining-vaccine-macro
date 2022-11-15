@@ -11,7 +11,7 @@ APIURL = 'https://api.place.naver.com/graphql'
 APIdata = '[{"operationName":"vaccineList","variables":{"input":{"keyword":"코로나백신위탁의료기관","x":"126.9421195","y":"37.4913207"},"businessesInput":{"start":0,"display":100,"deviceType":"mobile","x":"126.9421195","y":"37.4913207","bounds":"126.9060707;37.477069;126.9781684;37.5055696","sortingOrder":"distance"},"isNmap":false,"isBounds":false},"query":"query vaccineList($input: RestsInput, $businessesInput: RestsBusinessesInput, $isBounds: Boolean!) {  rests(input: $input) {    businesses(input: $businessesInput) {      total      vaccineLastSave      isUpdateDelayed      items {        id        name        description        distance        commonAddress        roadAddress        address        imageUrl        imageCount        tags        distance        category        businessHours        vaccineOpeningHour {          isDayOff          standardTime          __typename        }        vaccineQuantity {          totalQuantity          totalQuantityStatus          startTime          endTime          vaccineOrganizationCode          list {            quantity            quantityStatus            vaccineType            __typename          }          __typename        }        __typename      }      optionsForMap @include(if: $isBounds) {        maxZoom        minZoom        includeMyLocation        maxIncludePoiCount        center        __typename      }      __typename    }    queryResult {      keyword      vaccineFilter      categories      region      isBrandList      filterBooking      hasNearQuery      isPublicMask      __typename    }    __typename  }}"}]'
 
 done = False
-while done == False:
+while not done:
     time.sleep(0.4)
     headers = {
         "Origin": "https://m.place.naver.com",

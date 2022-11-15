@@ -71,10 +71,10 @@ def check_user_info_loaded():
             # print(key, value)
             if key != 'status':
                 continue
-            if key == 'status' and value == "NORMAL":
+            if value == "NORMAL":
                 print("사용자 정보를 불러오는데 성공했습니다.")
                 break
-            elif key == 'status' and value == "UNKNOWN":
+            elif value == "UNKNOWN":
                 print("상태를 알 수 없는 사용자입니다. 1339 또는 보건소에 문의해주세요.")
                 close()
             else:
@@ -88,12 +88,11 @@ def fill_str_with_space(input_s, max_size=40, fill_char=" "):
     - 최대 길이(max_size)는 40이며, input_s의 실제 길이가 이보다 짧으면
     남은 문자를 fill_char로 채운다.
     """
-    length = 0
-    for c in input_s:
-        if unicodedata.east_asian_width(c) in ["F", "W"]:
-            length += 2
-        else:
-            length += 1
+    length = sum(
+        2 if unicodedata.east_asian_width(c) in ["F", "W"] else 1
+        for c in input_s
+    )
+
     return input_s + fill_char * (max_size - length)
 
 
@@ -243,15 +242,13 @@ def close(success=False):
     elif success is False:
         play_xylophon()
         send_msg("오류와 함께 잔여백신 예약 프로그램이 종료되었습니다.")
-    else:
-        pass
     input("Press Enter to close...")
     sys.exit()
 
 
 def pretty_print(json_object):
     for org in json_object["organizations"]:
-        if org.get('status') == "CLOSED" or org.get('status') == "EXHAUSTED" or org.get('status') == "UNAVAILABLE":
+        if org.get('status') in ["CLOSED", "EXHAUSTED", "UNAVAILABLE"]:
             continue
         print(
             f"잔여갯수: {org.get('leftCounts')}\t상태: {org.get('status')}\t기관명: {org.get('orgName')}\t주소: {org.get('address')}")
@@ -293,13 +290,13 @@ def try_reservation(organization_code, vaccine_type):
         value = response_json[key]
         if key != 'code':
             continue
-        if key == 'code' and value == "NO_VACANCY":
+        if value == "NO_VACANCY":
             print("잔여백신 접종 신청이 선착순 마감되었습니다.")
             time.sleep(0.08)
-        elif key == 'code' and value == "TIMEOUT":
+        elif value == "TIMEOUT":
             print("TIMEOUT, 예약을 재시도합니다.")
             retry_reservation(organization_code, vaccine_type)
-        elif key == 'code' and value == "SUCCESS":
+        elif value == "SUCCESS":
             print("백신접종신청 성공!!!")
             organization_code_success = response_json.get("organization")
             print(
@@ -325,10 +322,10 @@ def retry_reservation(organization_code, vaccine_type):
         value = response_json[key]
         if key != 'code':
             continue
-        if key == 'code' and value == "NO_VACANCY":
+        if value == "NO_VACANCY":
             print("잔여백신 접종 신청이 선착순 마감되었습니다.")
             time.sleep(0.08)
-        elif key == 'code' and value == "SUCCESS":
+        elif value == "SUCCESS":
             print("백신접종신청 성공!!!")
             organization_code_success = response_json.get("organization")
             print(
